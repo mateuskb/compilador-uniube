@@ -1,26 +1,26 @@
-from rply import LexerGenerator
+from tokens import *
+    
+___all__ = ["Lexer"]
 
-
-class Lexer():
-    def __init__(self):
-        self.lexer = LexerGenerator()
-
-    def _add_tokens(self):
-        # Print
-        self.lexer.add('PRINT', r'print')
-        # Parenthesis
-        self.lexer.add('OPEN_PAREN', r'\(')
-        self.lexer.add('CLOSE_PAREN', r'\)')
-        # Semi Colon
-        self.lexer.add('SEMI_COLON', r'\;')
-        # Operators
-        self.lexer.add('SUM', r'\+')
-        self.lexer.add('SUB', r'\-')
-        # Number
-        self.lexer.add('NUMBER', r'\d+')
-        # Ignore spaces
-        self.lexer.ignore('\s+')
-
-    def get_lexer(self):
-        self._add_tokens()
-        return self.lexer.build()
+def Lexer(data: str) -> TokenInfo:
+    pos = 0 
+    while pos < len(data):
+        for tokenId in Token:
+            if match := tokenId.value.match(data, pos):
+                pos = match.end(0)
+                # print(pos)
+                if tokenId == Token.WHITESPACE or tokenId == Token.COMMENT:
+                    # ignore white spaces or comments 
+                    break
+                yield TokenInfo(tokenId.name, match.group(0))
+                break
+        else:
+            # in case pattern doesn't match send the charector as illegal
+            yield TokenInfo(ILLEGAL, data[pos])
+            pos += 1
+    else:
+        # in parser we read the token two times each iteration
+        # once for current token and one for next token
+        # so handing it by sending EOF 2 times
+        yield TokenInfo(EOF, '\x00') 
+        yield TokenInfo(EOF, '\x00') 
