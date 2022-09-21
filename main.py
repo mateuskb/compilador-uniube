@@ -1,7 +1,7 @@
 from lexer import Lexer
 from tokens import *
 
-def repl():
+def main():
     i = 0
     while True:
         try:
@@ -17,5 +17,5 @@ def repl():
                 i += 1   
         
 if __name__ == "__main__":
-    repl()
+    main()
   
